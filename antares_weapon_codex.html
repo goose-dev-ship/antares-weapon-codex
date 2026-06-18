@@ -1,0 +1,277 @@
+
+<h2 class="sr-only">Antares Imperial Armed Forces — Weapon Systems Codex</h2>
+<style>
+.codex-wrap{padding:1rem 0}
+.cat-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.5rem}
+.cat-tab{padding:6px 14px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);font-size:13px;cursor:pointer;background:var(--color-background-primary);color:var(--color-text-secondary);transition:background .15s}
+.cat-tab.active{background:var(--color-background-info);color:var(--color-text-info);border-color:var(--color-border-info)}
+.weapon-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.w-card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem 1.125rem;cursor:pointer;transition:border-color .15s}
+.w-card:hover{border-color:var(--color-border-secondary)}
+.w-card.open{border-color:var(--color-border-info)}
+.w-header{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:6px}
+.w-name{font-size:14px;font-weight:500;color:var(--color-text-primary)}
+.w-cat{font-size:11px;padding:2px 8px;border-radius:var(--border-radius-md);white-space:nowrap}
+.cat-kinetic{background:var(--color-background-secondary);color:var(--color-text-secondary)}
+.cat-railgun{background:#EAF3DE;color:#3B6D11}
+.cat-plasma{background:#FAECE7;color:#993C1D}
+.cat-missile{background:#FAEEDA;color:#854F0B}
+.cat-pointdefense{background:#E6F1FB;color:#185FA5}
+.cat-linear{background:#FBEAF0;color:#993556}
+.w-desc{font-size:13px;color:var(--color-text-secondary);line-height:1.5;margin-bottom:10px}
+.w-details{display:none;margin-top:8px;border-top:0.5px solid var(--color-border-tertiary);padding-top:10px}
+.w-card.open .w-details{display:block}
+.stat-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.stat-label{font-size:12px;color:var(--color-text-secondary);width:90px;flex-shrink:0}
+.stat-bar-wrap{flex:1;height:6px;background:var(--color-background-tertiary);border-radius:3px;overflow:hidden}
+.stat-bar{height:100%;border-radius:3px;transition:width .3s}
+.bar-dmg{background:#E24B4A}
+.bar-rng{background:#378ADD}
+.bar-spd{background:#1D9E75}
+.bar-pen{background:#EF9F27}
+.bar-pd{background:#D4537E}
+.stat-val{font-size:12px;color:var(--color-text-tertiary);width:28px;text-align:right;flex-shrink:0}
+.w-note{font-size:12px;color:var(--color-text-tertiary);margin-top:8px;line-height:1.5;font-style:italic}
+.section-title{font-size:11px;font-weight:500;color:var(--color-text-tertiary);letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px}
+</style>
+<div class="codex-wrap">
+<div class="cat-tabs" id="tabs"></div>
+<div class="weapon-grid" id="grid"></div>
+</div>
+<script>
+const weapons=[
+{name:"Kinetic Cycler",cat:"kinetic",short:"Standard direct-fire cannon. The backbone of Antaran naval gunnery.",
+desc:"A conventional magnetic-acceleration cannon firing solid kinetic slugs at high velocity. Available in calibres from 20cm to 90cm. Rate of fire varies by barrel length — shorter weapons cycle faster, heavier calibres deliver more impact energy per round. Kinetic cyclers are reliable, low-maintenance, and effective against unshielded or lightly armoured targets.",
+stats:{damage:4,range:4,speed:7,penetration:4},
+note:"Designated by calibre only (e.g. 'AL-25cm'). If a weapon has no special type designation, it is a kinetic cycler."},
+
+{name:"Induced Kinetic Cycler",cat:"kinetic",short:"High-velocity variant using electromagnetic induction to multiply muzzle energy.",
+desc:"An evolution of the standard cycler. A secondary induction coil wraps the barrel, applying a continuous electromagnetic field that accelerates the projectile a second time after initial propulsion. Results in significantly higher muzzle velocity and improved armour penetration compared to a standard cycler of the same calibre. Generates more heat and requires coolant cycling between sustained bursts.",
+stats:{damage:5,range:5,speed:7,penetration:6},
+note:"Identified by 'Induced Kinetic Cycler' or 'IKC' in designation. Common on mid-tier warships as primary armament."},
+
+{name:"Trident Induced Kinetic Cycler",cat:"kinetic",short:"Triple-barrel IKC variant. Fires in tight groupings for concentrated impact.",
+desc:"A three-barrel configuration of the Induced Kinetic Cycler system. All three barrels fire in a tight spread timed milliseconds apart, creating an overlapping impact zone that overwhelms point defence tracking and concentrates kinetic energy at a single hull section. Heavier and slower-cycling than a single-barrel IKC, but the grouped strike compensates in armour-cracking capability.",
+stats:{damage:6,range:5,speed:5,penetration:7},
+note:"The 'Trident' designation refers to the three-barrel arrangement, not a unique projectile type."},
+
+{name:"Harpoon Induced Kinetic Cycler",cat:"kinetic",short:"Long-barrelled precision IKC. Extreme range at the cost of fire rate.",
+desc:"A stretched-barrel variant of the Induced Kinetic Cycler optimised for standoff engagements. The extended induction coil and longer barrel translate to exceptional muzzle velocity and flat trajectory at distance, making it effective against targets the standard IKC cannot reliably hit. Fire rate is significantly reduced and the gun mount is large, limiting it to capital ships and battlecruisers.",
+stats:{damage:6,range:8,speed:4,penetration:7},
+note:"Found on larger warships as a long-range precision weapon. Pairs with fire-control systems for accuracy at extreme engagement distances."},
+
+{name:"Sledgehammer Kinetic Cycler",cat:"kinetic",short:"Massively overbuilt heavy kinetic cannon. Fires very slowly, hits very hard.",
+desc:"The Sledgehammer series sacrifices fire rate entirely for sheer kinetic delivery. A single round from an 84cm Sledgehammer carries enough energy to breach the armoured belt of a destroyer. The firing cycle involves full barrel cooldown between shots, making sustained fire impractical. Used as a hard-hitting punctuation weapon rather than a primary engagement gun — one shot to open a wound, then conventional weapons to exploit it.",
+stats:{damage:9,range:5,speed:1,penetration:9},
+note:"The unofficial crew designation 'Sledgehammer' reflects its single-shot, high-consequence use profile."},
+
+{name:"Octet Kinetic Cycler",cat:"kinetic",short:"Eight-barrel rotary kinetic cannon. Extreme rate of fire at moderate calibre.",
+desc:"A rotary design packing eight barrels on a single mount, cycling them in sequence to achieve a sustained fire rate no single-barrel weapon can match. Individual rounds are subsonic by kinetic cycler standards, but volume of fire saturates point defence systems and strips lighter armour through cumulative impact. Extremely effective against fast-moving fighters, corvettes, and incoming ordinance when used in a secondary role.",
+stats:{damage:5,range:3,speed:10,penetration:3},
+note:"The 78cm designation refers to barrel bore, not to a single projectile — all eight barrels fire the same round in sequence."},
+
+{name:"Beehive",cat:"kinetic",short:"Wide-spread fragmentation cannon. Area-denial weapon against light craft and ordnance.",
+desc:"Fires a canister round that fragments into hundreds of sub-projectiles within a short distance of the muzzle. Devastatingly effective in the terminal defence envelope against fighters, torpedoes, and boarding pods. Useless against anything with meaningful armour or at range. The 45D variant clusters the pattern more tightly; the 90Q variant fires a heavier canister with greater fragment mass.",
+stats:{damage:3,range:1,speed:10,penetration:1},
+note:"Categorised under standard weapons despite its anti-light-craft role. Not a point defence system — operates on the main battery power bus."},
+
+{name:"Shortstop (LCRK-99)",cat:"pointdefense",short:"Close-in rotary point defence. Last line against missiles and boarding craft.",
+desc:"A rapid-cycling rotary kinetic weapon optimised for terminal point defence. Fires a high volume of medium-calibre rounds in a tight tracking cone. The LCRK-99 operates on an independent targeting subsystem and can engage multiple threats simultaneously with sector allocation. Effective range is short — designed to destroy what slips through outer defences in the final seconds before impact.",
+stats:{damage:3,range:2,speed:10,penetration:2},
+note:"LCRK = 'Light Rotary Kinetic Close-range.' The Shortstop is standard on most Antaran warships as a supplementary point defence layer."},
+
+{name:"Lineman (HRAY-50)",cat:"pointdefense",short:"High-rate area-suppression point defence. Engages fighter formations and missile swarms.",
+desc:"The HRAY-50 fires a burst-cycled stream of lightweight kinetic projectiles in a wide suppression cone, optimised for engaging fast-moving targets at medium-short range. Unlike precision PD weapons, the Lineman trades tracking accuracy for sheer projectile density — saturating an approach vector rather than targeting individual threats. Highly effective against fighter formations and dumb-fire missiles.",
+stats:{damage:2,range:3,speed:10,penetration:1},
+note:"HRAY = 'High Rate Area Yield.' Complement to precision PD systems; rarely used alone."},
+
+{name:"Fullback (LRKC-180)",cat:"pointdefense",short:"Medium-range precision point defence. Tracks and engages guided ordinance.",
+desc:"A precision single-barrel point defence weapon with an active seeker link to the ship's threat tracking network. The LRKC-180 fires timed-burst kinetic rounds that detonate near their targets, creating a shrapnel envelope rather than relying on direct impact. Optimised for guided missiles, torpedoes, and slow bombers. The ADV variant adds an improved seeker and faster traverse speed.",
+stats:{damage:4,range:4,speed:8,penetration:2},
+note:"LRKC = 'Long-Range Kinetic Close-in.' The -180 suffix denotes traverse arc in degrees — full frontal hemisphere coverage."},
+
+{name:"Quarterback (LRKC-365)",cat:"pointdefense",short:"Full-hemisphere point defence. Covers all attack angles simultaneously.",
+desc:"An expanded version of the Fullback system with full 360-degree traverse capability and two paired barrels for simultaneous engagement of threats from any direction. The 365 suffix reflects the full-sphere engagement envelope. Slower per-barrel than the 180-degree variant due to the heavier mounting, but essential on ships operating without escort in open space where threats may approach from any vector.",
+stats:{damage:4,range:5,speed:7,penetration:2},
+note:"Primarily found on escort vessels and logistics ships that cannot rely on friendly fire-support for threat coverage."},
+
+{name:"Goalkeeper (ADM-76)",cat:"pointdefense",short:"Active decoy-missile point defence. Intercepts rather than destroys incoming threats.",
+desc:"Rather than firing projectiles, the ADM-76 launches a family of small interceptor drones that physically intercept incoming missiles and detonate against them. This approach is more reliable against fast-closing guided ordinance than kinetic PD, as it removes the need to hit a closing target. Reload time between launches is significant. Each 'goalkeeper' drone is single-use and must be replenished from stores.",
+stats:{damage:6,range:6,speed:6,penetration:0},
+note:"ADM = 'Active Decoy Missile.' Expensive per-intercept but dramatically more reliable against high-speed guided threats."},
+
+{name:"Sentinel (HVWS-1)",cat:"pointdefense",short:"Heavy void-watch system. Engages large or heavily armoured incoming threats.",
+desc:"The HVWS-1 is the heaviest point defence system in the Antaran inventory, designed to deal with threats the lighter PD systems cannot reliably stop — armoured boarding pods, drone carriers, large torpedoes, and fighter-bombers with reinforced frames. Fires a heavier kinetic round at lower rate than other PD systems. Requires manual targeting queue rather than fully automated tracking.",
+stats:{damage:7,range:5,speed:4,penetration:6},
+note:"HVWS = 'Heavy Void Watch System.' Found only on capital ships and high-value escorts due to size and power requirements."},
+
+{name:"Linebacker (SRKC-88)",cat:"pointdefense",short:"Short-range kinetic coverage. Engages threats in the immediate approach envelope.",
+desc:"A lightweight, fast-cycling point defence weapon covering the innermost approach zone around a vessel. The Linebacker operates in the terminal engagement band where larger PD systems lose tracking advantage due to target closure speed. Rate of fire is prioritised above all else — the SRKC-88 effectively creates a wall of kinetic rounds across a narrow approach cone.",
+stats:{damage:2,range:2,speed:10,penetration:1},
+note:"SRKC = 'Short-Range Kinetic Close-in.' Often paired with Lineman systems to cover different range bands."},
+
+{name:"Ballista (ASM-900)",cat:"missile",short:"Heavy long-range anti-ship missile. Primary capital-ship stand-off weapon.",
+desc:"A large-diameter anti-ship missile carrying a shaped-charge warhead designed to penetrate armoured hulls before detonating internally. The 900-series Ballista operates at extreme stand-off range with active mid-course correction and a terminal seeker. Effective against capital ships and stations. Can be spoofed by advanced ECM but remains the standard heavy strike weapon of the Antaran fleet.",
+stats:{damage:8,range:9,speed:6,penetration:7},
+note:"ASM = 'Anti-Ship Missile.' The -900 suffix indicates the warhead-class mass in kg equivalent. Rapid-fire variants cycle faster but carry a lighter warhead."},
+
+{name:"Arbalest (ASM-750)",cat:"missile",short:"Medium anti-ship missile. Versatile mid-range strike weapon.",
+desc:"The workhorse anti-ship missile of the Antaran Navy. Lighter and faster-cycling than the Ballista, the 750-class Arbalest trades some warhead mass for improved launch rate and shorter minimum engagement distance. Standard fit on destroyers and cruisers. The Rapid-Fire variant uses a simplified guidance package and lighter airframe to enable rapid salvo fire.",
+stats:{damage:6,range:7,speed:7,penetration:5},
+note:"The most widely deployed missile in the Antaran inventory. Produced in large quantities at Classis Orbis."},
+
+{name:"Stinger (ASM-300)",cat:"missile",short:"Light anti-ship missile. High rate of fire, effective against unarmoured targets.",
+desc:"A small, fast-cycling anti-ship missile intended for saturation attacks against lightly armoured or unshielded targets. The Stinger is too small to threaten capital ship armour belts but is highly effective against fighters, corvettes, logistics vessels, and exposed weapon mounts. The short reload cycle allows a single launcher to put many rounds downrange quickly.",
+stats:{damage:3,range:5,speed:9,penetration:2},
+note:"Often fired in coordinated salvoes to overwhelm point defence. Individual rounds are easily intercepted; en-masse they are not."},
+
+{name:"Gakgung (AShM-500)",cat:"missile",short:"Anti-ship homing missile. Mid-weight seeker-guided strike weapon.",
+desc:"A medium anti-ship missile with an active radar and heat-seeking terminal guidance package. The Gakgung is more resistant to ECM than pure radar-guided weapons due to its dual-mode seeker. Primarily deployed from armoured ship mounts where tube-launched missiles are preferred over external hard-points. Named after a traditional bow from pre-space Antaran history.",
+stats:{damage:6,range:7,speed:7,penetration:5},
+note:"AShM = 'Anti-Ship Homing Missile.' The dual-mode seeker makes the Gakgung harder to decoy than single-mode alternatives."},
+
+{name:"Armageddon (ASNW-1200)",cat:"missile",short:"Nuclear-yield capital weapon. Strategic anti-ship and planetary bombardment role.",
+desc:"The ASNW-1200 is the heaviest single-shot weapon in the standard Antaran naval inventory — a nuclear-yield warhead carried on an anti-ship missile body. A single hit is capable of gutting a capital ship or levelling a surface installation. Restricted under Imperial law to armoured destroyer-class hulls and above. Launch requires dual-key authorisation from the ship's command staff. Carries enormous deterrent weight.",
+stats:{damage:10,range:8,speed:5,penetration:10},
+note:"ASNW = 'Anti-Ship Nuclear Weapon.' Deployment is a political as much as a tactical decision. Warheads are kept separately from launcher assemblies in peacetime."},
+
+{name:"Javelin (ASM-800)",cat:"missile",short:"Aircraft-intercept missile. Optimised for fast-moving fighter and bomber targets.",
+desc:"A specialised anti-fighter missile with a high-agility airframe and active seeker capable of tracking manoeuvring targets at close range. The 800-class Javelin sacrifices warhead mass for speed and turning capability. Highly effective against fighters, attack craft, and small drones. Useless against armoured ship hulls — the warhead is sized for aircraft-thickness airframes.",
+stats:{damage:4,range:5,speed:10,penetration:2},
+note:"Primary anti-fighter missile of the Antaran carrier fleet. Fired in pairs for high probability of kill against manoeuvring targets."},
+
+{name:"Wraith Drone (E/I-95B)",cat:"missile",short:"Autonomous attack drone used as a missile. Manoeuvres independently to target.",
+desc:"Rather than a conventional warhead, the Wraith is a self-guided semi-autonomous drone that flies a complex evasion pattern toward its target before delivering its payload. It responds to point-defence fire and attempts to evade. More expensive per unit than a conventional missile but significantly harder to intercept. The E/I designation indicates it can function both as a launched missile and a recovering drone in some configurations.",
+stats:{damage:7,range:7,speed:8,penetration:5},
+note:"The Wraith family blurs the line between missile and drone. Requires dedicated drone-control infrastructure aboard the launching vessel."},
+
+{name:"Class 2A Railgun",cat:"railgun",short:"Light railgun. Provides consistent armour-piercing capability to smaller vessels.",
+desc:"The entry-level Antaran railgun system. Accelerates a ferrous projectile along electromagnetic rails to hypervelocity, delivering kinetic energy at magnitudes a conventional cannon cannot achieve at equivalent calibre. The Class 2A is sized for destroyer-class mounts. Fire rate is low — full capacitor charge is required between shots — but penetration against armour is exceptional for a weapon of its size.",
+stats:{damage:6,range:7,speed:2,penetration:9},
+note:"The 'Class' designation in Antaran railguns refers to the power generation tier required, not the physical size of the weapon."},
+
+{name:"Class 3A Railgun",cat:"railgun",short:"Medium railgun. Capital-grade penetration on a cruiser-class hull.",
+desc:"A step up from the 2A, the Class 3A draws from a dedicated capacitor bank requiring its own power allocation. The projectile mass and muzzle velocity are substantially higher, giving it the ability to penetrate the armoured belts of cruisers and older battleships. Requires a dedicated power management crew during firing. The Atomizer variant fires a slightly lighter round at higher velocity for improved accuracy at range.",
+stats:{damage:8,range:8,speed:2,penetration:10},
+note:"Found on armoured destroyers, cruisers, and experimental hulls. Designated 'Special' in ship weapon loadouts due to the power infrastructure required."},
+
+{name:"Class 4 Railgun",cat:"railgun",short:"Heavy railgun battery. Multiple barrels share a single charge cycle for burst fire.",
+desc:"The Class 4 system fires multiple barrels simultaneously from a shared charge, creating a tight-interval burst rather than a single round. The [4x] notation in ship loadouts indicates four barrels per mount. Devastating against capital-grade armour — the overlapping impacts strike before damage-control can respond. Requires ship-wide power diversion during the charge cycle, leaving other systems momentarily weakened.",
+stats:{damage:9,range:8,speed:1,penetration:10},
+note:"The simultaneous multi-barrel discharge is the defining characteristic. A [4x]2x mount means four barrels per assembly, two assemblies fitted."},
+
+{name:"Class 5D Railgun",cat:"railgun",short:"Superheavy railgun. Reserved for the largest warships in the Imperial fleet.",
+desc:"The most powerful railgun in current Antaran service. The 5D classification requires dedicated shipboard reactors — no existing Antaran warship can field it without the vessel being substantially designed around it. The projectile mass is classified but estimated to be capable of penetrating any armour currently fielded by any known entity. Fire rate is measured in minutes between shots, not seconds.",
+stats:{damage:10,range:9,speed:1,penetration:10},
+note:"Currently deployed exclusively aboard Gjallarhorn-class Behemoth hulls. The [2x]4x notation indicates two barrels per mount, four mounts total."},
+
+{name:"Massif Railcannon (Class 1A-S)",cat:"railgun",short:"Dedicated siege railcannon. Fires at planetary bombardment scale.",
+desc:"Not a ship-to-ship weapon — the Massif is a strategic bombardment system designed to strike hardened surface targets, orbital stations, and extremely large capital ships at extreme range. A single round from the Massif carries enough kinetic energy to crater a city block or gut a space station. Requires a dedicated targeting window lasting several minutes and leaves the vessel essentially defenceless during firing.",
+stats:{damage:10,range:10,speed:1,penetration:10},
+note:"The 'S' in Class 1A-S indicates 'Siege' variant. Found only on dedicated artillery platforms. Not intended for fleet engagements."},
+
+{name:"Linear Induction Driver",cat:"linear",short:"Electromagnetic linear accelerator. Fires projectiles faster than conventional railguns.",
+desc:"Where a railgun accelerates a projectile along external rails, the Linear Induction Driver uses a series of internal electromagnetic coils along a sealed barrel to achieve a similar effect with greater precision and less barrel wear. Muzzle velocity is comparable to railguns at equivalent power, but sustained fire rates are higher as the barrel does not experience rail ablation. Available in 35cm and 90cm variants.",
+stats:{damage:7,range:8,speed:3,penetration:8},
+note:"The LD designation distinguishes it from IKC (electromagnetic assist) and railgun (external rail) systems. All three use electromagnetic principles but operate on distinct engineering principles."},
+
+{name:"Angurvadal (ASMAT-003)",cat:"linear",short:"High-precision linear accelerator. Named for a mythological Antaran blade.",
+desc:"A specialised linear induction weapon fielded exclusively on artillery platform hulls. The Angurvadal fires a hardened penetrator at extreme precision over long distances, designed to strike specific hull sections or weapon emplacements rather than broad area impact. The weapon requires a dedicated targeting operator and fire-control integration beyond standard gunnery suites. Named in the tradition of Antaran weapons carrying mythological designations.",
+stats:{damage:7,range:9,speed:2,penetration:9},
+note:"Specialist weapon found only on dedicated artillery hulls. Requires integrated fire-control; cannot be retrofitted to vessels without the supporting systems."},
+
+{name:"Hyper Expansion Cannon",cat:"plasma",short:"Plasma-assisted kinetic weapon. A superheated round that expands violently on impact.",
+desc:"The Hyper Expansion Cannon fires a dense metallic projectile with a plasma core. On impact, the plasma charge detonates inside the wound channel, causing catastrophic internal expansion of the penetrator — shredding compartments and systems far beyond the initial penetration point. Against lightly armoured targets the expansion is destructive; against heavily armoured targets it still causes significant secondary damage behind the armour plate.",
+stats:{damage:8,range:5,speed:4,penetration:7},
+note:"Available in 90cm and 120cm variants. The 'Hyper Expansion' refers to the post-penetration plasma detonation, not the muzzle velocity."},
+
+{name:"Plasma Caster",cat:"plasma",short:"Directed plasma weapon. Fires a coherent plasma bolt at short to medium range.",
+desc:"Generates and fires a magnetically contained bolt of superheated plasma. At short range the plasma bolt maintains coherence and delivers catastrophic thermal and kinetic energy to the target hull, capable of burning through armour and igniting internal compartments simultaneously. At longer range the magnetic containment degrades and the bolt disperses, making it ineffective. Requires significant power draw per shot.",
+stats:{damage:9,range:4,speed:5,penetration:8},
+note:"The Rapid variant cycles faster by reducing bolt charge — slightly lower damage, faster engagement tempo. The 200cm designation refers to the containment bore diameter."},
+
+{name:"Plasma Rabauld (Focused)",cat:"plasma",short:"Short-range focused plasma emitter. Sustained stream rather than single bolts.",
+desc:"Unlike the bolt-firing Plasma Caster, the Rabauld fires a brief sustained stream of focused plasma in a continuous beam. Effective at very short range against lightly armoured targets, and highly effective at burning through exposed systems, sensors, and weapon mounts. The 'Focused' variant uses a tighter magnetic lens for greater energy concentration at the cost of even shorter effective range.",
+stats:{damage:6,range:2,speed:8,penetration:6},
+note:"Found only on experimental and premium hulls. The Rabauld is a specialised weapon — effective only in close-range knife-fight engagements."},
+
+{name:"Plasma Stream Cannon",cat:"plasma",short:"Heavy sustained plasma weapon. Capital-grade thermal damage system.",
+desc:"A large-calibre plasma weapon that fires a sustained stream of magnetically stabilised plasma rather than individual bolts. The stream can be walked across a target's hull to burn through sequential armour sections, making it effective at dismantling large vessels systematically. Power consumption is enormous and sustained fire rapidly depletes ship reserves. Found only on capital-grade hulls.",
+stats:{damage:9,range:5,speed:3,penetration:8},
+note:"The 90cm designation refers to the plasma aperture diameter. Only found on Super Cruiser class and above due to power requirements."},
+
+{name:"Matter Disintegrator",cat:"plasma",short:"Exotic weapon. Disrupts molecular bonds in the target material.",
+desc:"A classified Antaran weapon system operating on principles distinct from kinetic, plasma, or missile categories. The Matter Disintegrator projects a directed field that interferes with atomic bonding in the target material, causing structural disintegration along the impact vector. Light and Heavy variants scale with power output. The Burst-Fire variant prioritises discharge rate. The Super Heavy variant is capable of disintegrating sections of capital ship hull in a single sustained pulse.",
+stats:{damage:10,range:6,speed:3,penetration:10},
+note:"Designated 'Special' in all ship loadouts. Found exclusively on Stellar Trident class vessels. Full operating principles are classified above standard fleet access."},
+
+{name:"Precision Matter Disintegrator",cat:"plasma",short:"Surgical-precision disintegrator. Targets specific hull sections rather than broad area.",
+desc:"A refined version of the standard Matter Disintegrator optimised for targeting precision over raw output. Where standard disintegrators apply broad-pattern disruption, the Precision variant focuses the field to a narrow point for surgical effect — disabling specific weapon mounts, breaching single compartments, or collapsing a structural member without triggering total hull failure. Used for capture operations or precision disabling of high-value targets.",
+stats:{damage:8,range:6,speed:3,penetration:10},
+note:"Found only on the Hydra-class Mothership. Its presence on a vessel intended for fleet command operations suggests a role in high-value target neutralisation."},
+
+{name:"Nanomachine Injector",cat:"missile",short:"Repair and logistics system. Deploys repair nanomachines to allied vessels.",
+desc:"Not a weapon — a logistics system. The Nanomachine Injector fires a canister of repair-grade nanomachines at a friendly vessel, where they disperse across the hull and begin automated damage repair. The Medium variant handles surface damage, breaches, and minor structural failure. Requires the receiving vessel to be stationary or at low relative velocity for effective dispersal. Found only on dedicated logistics ships.",
+stats:{damage:0,range:4,speed:5,penetration:0},
+note:"Healing systems are categorised separately from weapons in Antaran fleet doctrine. The injector is the primary sustaining capability of logistics vessels in fleet engagements."},
+];
+
+const cats=[
+{id:"all",label:"All systems"},
+{id:"kinetic",label:"Kinetic"},
+{id:"railgun",label:"Railgun"},
+{id:"plasma",label:"Plasma / Exotic"},
+{id:"missile",label:"Missiles"},
+{id:"pointdefense",label:"Point defence"},
+{id:"linear",label:"Linear"},
+];
+
+let active="all";
+
+function bar(val,cls){
+return `<div class="stat-row"><span class="stat-label" style="font-size:12px;color:var(--color-text-secondary)">${cls.replace('bar-','').charAt(0).toUpperCase()+cls.replace('bar-','').slice(1)}</span><div class="stat-bar-wrap"><div class="stat-bar ${cls}" style="width:${val*10}%"></div></div><span class="stat-val">${val}/10</span></div>`;
+}
+
+function render(){
+const grid=document.getElementById('grid');
+const list=active==='all'?weapons:weapons.filter(w=>w.cat===active);
+grid.innerHTML=list.map((w,i)=>`
+<div class="w-card" id="wc${i}" onclick="toggle('wc${i}')">
+<div class="w-header">
+<span class="w-name">${w.name}</span>
+<span class="w-cat cat-${w.cat}">${cats.find(c=>c.id===w.cat)?.label||w.cat}</span>
+</div>
+<div class="w-desc">${w.short}</div>
+<div class="w-details">
+<p style="font-size:13px;color:var(--color-text-secondary);line-height:1.6;margin-bottom:12px">${w.desc}</p>
+<div class="section-title">Performance</div>
+${w.stats.damage>0?bar(w.stats.damage,'bar-dmg'):''}
+${w.stats.range>0?bar(w.stats.range,'bar-rng'):''}
+${w.stats.speed>0?bar(w.stats.speed,'bar-spd'):''}
+${w.stats.penetration>0?bar(w.stats.penetration,'bar-pen'):''}
+${w.note?`<p class="w-note">${w.note}</p>`:''}
+</div>
+</div>`).join('');
+}
+
+function toggle(id){
+const el=document.getElementById(id);
+el.classList.toggle('open');
+}
+
+const tabs=document.getElementById('tabs');
+cats.forEach(c=>{
+const b=document.createElement('button');
+b.className='cat-tab'+(c.id==='all'?' active':'');
+b.textContent=c.label;
+b.onclick=()=>{
+active=c.id;
+document.querySelectorAll('.cat-tab').forEach(t=>t.classList.remove('active'));
+b.classList.add('active');
+render();
+};
+tabs.appendChild(b);
+});
+
+render();
+</script>
